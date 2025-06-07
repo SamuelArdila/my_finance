@@ -18,19 +18,26 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
+interface ComboboxOption {
+  value: string;
+  label: string;
+}
+
 interface ComboboxProps {
   value: string;
   onChange: (value: string) => void;
+  options?: ComboboxOption[];
 }
 
-const plantCategories = [
+const defaultOptions = [
   { value: "", label: "None" },
   { value: "Unique", label: "Unique" },
   { value: "Monthly", label: "Monthly" },
 ];
 
-export function Combobox({ value, onChange }: ComboboxProps) {
+export function Combobox({ value, onChange, options }: ComboboxProps) {
   const [open, setOpen] = React.useState(false);
+  const opts = options ?? defaultOptions;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -41,17 +48,17 @@ export function Combobox({ value, onChange }: ComboboxProps) {
           aria-expanded={open}
           className="w-[200px] justify-between"
         >
-          {value ? value : "Select category..."}
+          {value ? value : "Select type..."}
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
         <Command>
-          <CommandInput placeholder="Search category..." className="h-9" />
+          <CommandInput placeholder="Search type..." className="h-9" />
           <CommandList>
-            <CommandEmpty>No category found.</CommandEmpty>
+            <CommandEmpty>No type found.</CommandEmpty>
             <CommandGroup>
-              {plantCategories.map((cat) => (
+              {opts.map((cat) => (
                 <CommandItem
                   key={cat.value}
                   value={cat.value}
