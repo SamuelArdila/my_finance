@@ -3,7 +3,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -13,11 +12,11 @@ import { getGoalsById } from "@/actions/financial.actions";
 
 type Financials = Awaited<ReturnType<typeof getGoalsById>>;
 
-interface goalsCardProps {
+interface GoalsCardProps {
   financials: Financials;
 }
 
-export default function goalsCard({ financials }: Readonly<goalsCardProps>) {
+export default function goalsCard({ financials }: Readonly<GoalsCardProps>) {
 
 
   if (!financials) {

@@ -24,42 +24,67 @@ import { Input } from "./ui/input";
 import { useState } from "react";
 import { getFinancials } from "@/actions/financial.actions";
 import { useRouter } from "next/navigation";
+import { Button } from "./ui/button";
+import { CreateDialog } from "./createDialog";
 
 type Financials = Awaited<ReturnType<typeof getFinancials>>;
 
-interface financialsTableProps {
+interface FinancialsTableProps {
   financials: Financials;
+  searchPlaceholder?: string;
+  createDialogTitlePlaceholder?: string;
 }
-export default function FinancialsTable({ financials }: Readonly<financialsTableProps>) {
-  const router = useRouter();
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
 
-  // Filter plants by name and category (if selected)
+export default function FinancialsTable({
+  financials,
+  searchPlaceholder = "Filter items...",
+  createDialogTitlePlaceholder = "Add Item",
+}: Readonly<FinancialsTableProps>) {
+  const router = useRouter();
+  const [selectedType, setSelectedType] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+
+  
+
   const filteredColumns = financials?.userFinancials?.filter((column) =>
     column.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-    (selectedCategory === "" || column.type === selectedCategory)
+    (selectedType === "" || column.type === selectedType)
   );
 
   return (
     <div className="w-full">
       <div className="w-full">
-        <div className="flex items-center gap-2 py-4">
-          <div className="relative max-w-sm w-full">
-            <Input
-              placeholder="Filter incomes..."
-              className="pl-10"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <Search className="absolute h-4 w-4 left-3 top-1/2 transform -translate-y-1/2" />
-          </div>
+        <div className="flex items-center justify-between py-4 w-full">
+          {/* Left: Create Button */}
+          <Button
+            className="btn btn-primary"
+            variant={"outline"}
+            onClick={() => setShowCreateDialog(true)}
+          >+ Add</Button>
 
-          <Combobox
-            value={selectedCategory}
-            onChange={(val) => setSelectedCategory(val)}
-          />
+          <div className="flex items-center gap-2">
+            <div className="relative max-w-sm w-full">
+              <Input
+                placeholder={searchPlaceholder}
+                className="pl-10"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <Search className="absolute h-4 w-4 left-3 top-1/2 transform -translate-y-1/2" />
+            </div>
+            <Combobox
+              value={selectedType}
+              onChange={(val) => setSelectedType(val)}
+            />
+          </div>
         </div>
+        <CreateDialog 
+          open={showCreateDialog} 
+          onOpenChange={setShowCreateDialog}
+          title={createDialogTitlePlaceholder}
+          category={isValidCategory(financials?.category) ? financials.category : "incomes"}
+        />
 
         <Table>
           <TableHeader>
@@ -125,4 +150,8 @@ export default function FinancialsTable({ financials }: Readonly<financialsTable
       </Pagination>
     </div>
   );
+}
+
+function isValidCategory(cat: any): cat is "incomes" | "expenses" | "goals" {
+  return cat === "incomes" || cat === "expenses" || cat === "goals";
 }
