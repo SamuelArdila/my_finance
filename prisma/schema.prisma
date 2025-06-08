@@ -14,35 +14,35 @@ datasource db {
 }
 
 model Incomes {
-  id String @id @default(cuid())
-  name String
-  type String
-  amount Float
-  state Boolean @default(true)
+  id        Int      @id @default(autoincrement())
+  name      String
+  type      String
+  amount    Float
+  state     Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime? @updatedAt
-  userId String
+  userId    String
 }
 
 model Expenses {
-  id String @id @default(cuid())
-  name String
-  type String
-  amount Float
-  state Boolean @default(true)
+  id        Int      @id @default(autoincrement())
+  name      String
+  type      String
+  amount    Float
+  state     Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime? @updatedAt
-  userId String
+  userId    String
 }
 
 model Goals {
-  id String @id @default(cuid())
-  name String
-  type String
-  amount Float
-  state Boolean @default(true)
+  id        Int      @id @default(autoincrement())
+  name      String
+  type      String
+  amount    Float
+  state     Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime? @updatedAt
-  userId String
-  imageURL String?
+  userId    String
+  imageURL  String?
 }
