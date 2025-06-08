@@ -25,11 +25,11 @@ import { useState } from "react";
 import { getFinancials } from "@/actions/financial.actions";
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
-import { CreateDialog } from "./ui/createDialog";
+import { CreateDialog } from "./createDialog";
 
 type Financials = Awaited<ReturnType<typeof getFinancials>>;
 
-interface financialsTableProps {
+interface FinancialsTableProps {
   financials: Financials;
   searchPlaceholder?: string;
   createDialogTitlePlaceholder?: string;
@@ -39,12 +39,11 @@ export default function FinancialsTable({
   financials,
   searchPlaceholder = "Filter items...",
   createDialogTitlePlaceholder = "Add Item",
-}: Readonly<financialsTableProps>) {
+}: Readonly<FinancialsTableProps>) {
   const router = useRouter();
   const [selectedType, setSelectedType] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<"" | "incomes" | "expenses" | "goals">("");
 
   
 

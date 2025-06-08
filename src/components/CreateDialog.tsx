@@ -1,5 +1,5 @@
 "use client";
-import { useState, useTransition } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -12,8 +12,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Combobox } from "./combo-box";
-import { createIncomes } from "@/actions/financial.actions"
+import { Combobox } from "./ui/combo-box";
 
 
 interface CreateDialogProps {
@@ -23,11 +22,16 @@ interface CreateDialogProps {
   category: "incomes" | "expenses" | "goals";
 }
 
-export function CreateDialog({ open, onOpenChange, title = "Create New Item", category }: CreateDialogProps) {
+export function CreateDialog({
+  open,
+  onOpenChange,
+  title = "Create New Item",
+  category,
+}: Readonly<CreateDialogProps>) {
   const [type, setType] = useState<string>("");
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
-  const [imageURL, setImageURL] = useState(""); // <-- Add this line
+  const [imageURL, setImageURL] = useState("");
   const [isPending, setIsPending] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {

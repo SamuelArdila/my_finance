@@ -7,6 +7,10 @@ export async function POST(req: NextRequest) {
     const result = await createExpenses({ name, amount: Number(amount), type });
     return NextResponse.json(result, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ error: "Failed to create expense" }, { status: 500 });
+    console.error("Error in POST /api/expenses:", error);
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Failed to create expense" },
+      { status: 500 }
+    );
   }
 }

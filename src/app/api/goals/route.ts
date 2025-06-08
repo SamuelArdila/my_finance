@@ -7,6 +7,10 @@ export async function POST(req: NextRequest) {
     const result = await createGoals({ name, amount: Number(amount), type, imageURL });
     return NextResponse.json(result, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ error: "Failed to create goal" }, { status: 500 });
+    console.error("Error in POST /api/goals:", error);
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Failed to create goal" },
+      { status: 500 }
+    );
   }
 }

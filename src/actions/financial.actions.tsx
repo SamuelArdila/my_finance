@@ -3,7 +3,6 @@
 import { prisma } from "@/lib/prisma";
 import { getUserId } from "./user.action";
 import { revalidatePath } from "next/cache";
-import { Prisma } from "@prisma/client";
 
 export async function getFinancials(category: string, active: boolean, searchTerm?: string) {
   try {
