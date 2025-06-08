@@ -139,8 +139,7 @@ export default function FinancialsTable({
                       variant="destructive"
                       onClick={e => {
                         e.stopPropagation();
-                        // TODO: Call delete logic
-                        alert(`Delete ${column.name}`);
+                        alert(`Delete ${column.name}`); // Implement delete logic here
                       }}
                     >
                       Delete
