@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Combobox } from "./ui/combo-box";
+import { useRouter } from "next/navigation";
 
 
 interface CreateDialogProps {
@@ -33,7 +34,8 @@ export function CreateDialog({
   const [amount, setAmount] = useState("");
   const [imageURL, setImageURL] = useState("");
   const [isPending, setIsPending] = useState(false);
-
+  const router = useRouter();
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!type || !name || !amount) return;
@@ -52,6 +54,7 @@ export function CreateDialog({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
+    router.refresh(); // Refresh the page to show the new item
     setName("");
     setAmount("");
     setType("");
