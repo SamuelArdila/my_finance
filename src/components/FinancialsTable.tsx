@@ -41,13 +41,16 @@ export default function FinancialsTable({
   createDialogTitlePlaceholder = "Add Item",
 }: Readonly<financialsTableProps>) {
   const router = useRouter();
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedType, setSelectedType] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<"" | "incomes" | "expenses" | "goals">("");
+
+  
 
   const filteredColumns = financials?.userFinancials?.filter((column) =>
     column.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-    (selectedCategory === "" || column.type === selectedCategory)
+    (selectedType === "" || column.type === selectedType)
   );
 
   return (
@@ -72,8 +75,8 @@ export default function FinancialsTable({
               <Search className="absolute h-4 w-4 left-3 top-1/2 transform -translate-y-1/2" />
             </div>
             <Combobox
-              value={selectedCategory}
-              onChange={(val) => setSelectedCategory(val)}
+              value={selectedType}
+              onChange={(val) => setSelectedType(val)}
             />
           </div>
         </div>
@@ -81,6 +84,7 @@ export default function FinancialsTable({
           open={showCreateDialog} 
           onOpenChange={setShowCreateDialog}
           title={createDialogTitlePlaceholder}
+          category={isValidCategory(financials?.category) ? financials.category : "incomes"}
         />
 
         <Table>
@@ -147,4 +151,8 @@ export default function FinancialsTable({
       </Pagination>
     </div>
   );
+}
+
+function isValidCategory(cat: any): cat is "incomes" | "expenses" | "goals" {
+  return cat === "incomes" || cat === "expenses" || cat === "goals";
 }

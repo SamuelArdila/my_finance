@@ -3,10 +3,12 @@
 import { prisma } from "@/lib/prisma";
 import { getUserId } from "./user.action";
 import { revalidatePath } from "next/cache";
+import { Prisma } from "@prisma/client";
 
 export async function getFinancials(category: string, active: boolean, searchTerm?: string) {
   try {
     const currentUserId = await getUserId();
+    console.log("Current userId:", currentUserId);
 
     const whereClause: any = {
       userId: currentUserId,
@@ -16,6 +18,12 @@ export async function getFinancials(category: string, active: boolean, searchTer
       whereClause.state = true;
     }
 
+    if (searchTerm) {
+      whereClause.name = {
+        contains: searchTerm,
+        mode: "insensitive",
+      };
+    }
     let userFinancials;
 
     if (category === "incomes") {
@@ -55,12 +63,7 @@ export async function getFinancials(category: string, active: boolean, searchTer
 
     }
 
-    if (searchTerm) {
-      whereClause.name = {
-        contains: searchTerm,
-        mode: "insensitive",
-      };
-    }
+    
 
     revalidatePath("/"); //makes render faster
     return { success: true, userFinancials, category };
@@ -71,6 +74,75 @@ export async function getFinancials(category: string, active: boolean, searchTer
 
 export async function getGoalsById(id: string) {
   let returnVal;
-  returnVal = await prisma.goals.findUnique({ where: { id } });
+  returnVal = await prisma.goals.findUnique({ where: { id: Number(id) } });
   return returnVal;
+}
+
+export type IncomeFormInput = {
+  name: string;
+  amount: number;
+  type: string;
+};
+
+export type ExpenseFormInput = {
+  name: string;
+  amount: number;
+  type: string;
+};
+
+export type GoalFormInput = {
+  name: string;
+  amount: number;
+  type: string;
+  imageURL?: string;
+};
+
+export async function createIncomes(data: IncomeFormInput) {
+  console.log("creating income");
+  console.log(data);
+  try {
+    const currentUserId = await getUserId();
+    if (!currentUserId) return;
+
+    const newIncome = await prisma.incomes.create({
+      data: {
+        ...data,
+        userId: currentUserId,
+      },
+    });
+    console.log("Created income in DB:", newIncome);
+    revalidatePath("/incomes");
+    return newIncome;
+  } catch (error) {
+    console.error("Error Creating Income:", error);
+    throw error;
+  }
+}
+
+export async function createExpenses(data: ExpenseFormInput) {
+  const currentUserId = await getUserId();
+  if (!currentUserId) return;
+
+  const newExpense = await prisma.expenses.create({
+    data: {
+      ...data,
+      userId: currentUserId,
+    },
+  });
+  revalidatePath("/expenses");
+  return newExpense;
+}
+
+export async function createGoals(data: GoalFormInput) {
+  const currentUserId = await getUserId();
+  if (!currentUserId) return;
+
+  const newGoal = await prisma.goals.create({
+    data: {
+      ...data,
+      userId: currentUserId,
+    },
+  });
+  revalidatePath("/goals");
+  return newGoal;
 }
