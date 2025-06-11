@@ -27,6 +27,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 import { CreateDialog } from "./CreateDialog";
 import { EditDialog } from "./EditDialog";
+import DeleteDialog from "./DeleteDialog";
 
 type Financials = Awaited<ReturnType<typeof getFinancials>>;
 
@@ -46,9 +47,11 @@ export default function FinancialsTable({
   const [searchTerm, setSearchTerm] = useState("");
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
+  const [deletingItem, setDeletingItem] = useState<any>(null);
 
-  
+
 
   const filteredColumns = financials?.userFinancials?.filter((column) =>
     column.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
@@ -82,8 +85,8 @@ export default function FinancialsTable({
             />
           </div>
         </div>
-        <CreateDialog 
-          open={showCreateDialog} 
+        <CreateDialog
+          open={showCreateDialog}
           onOpenChange={setShowCreateDialog}
           title={createDialogTitlePlaceholder}
           category={isValidCategory(financials?.category) ? financials.category : "incomes"}
@@ -139,7 +142,8 @@ export default function FinancialsTable({
                       variant="destructive"
                       onClick={e => {
                         e.stopPropagation();
-                        alert(`Delete ${column.name}`); // Implement delete logic here
+                        setDeletingItem(column);
+                        setShowDeleteDialog(true);
                       }}
                     >
                       Delete
@@ -152,14 +156,23 @@ export default function FinancialsTable({
 
         </Table>
         {editingItem && (
-        <EditDialog
-          open={showEditDialog}
-          onOpenChange={setShowEditDialog}
-          title="Edit Item"
-          category={isValidCategory(financials?.category) ? financials.category : "incomes"}
-          item={editingItem}
-        />
-      )}
+          <EditDialog
+            open={showEditDialog}
+            onOpenChange={setShowEditDialog}
+            title="Edit Item"
+            category={isValidCategory(financials?.category) ? financials.category : "incomes"}
+            item={editingItem}
+          />)}
+        {deletingItem && (
+          <DeleteDialog
+            register={{
+              open: showDeleteDialog,
+              onOpenChange: setShowDeleteDialog,
+              category: isValidCategory(financials?.category) ? financials.category : "incomes",
+              id: deletingItem.id,
+            }}
+          />
+        )}
       </div>
 
       <Pagination className="mt-4">

@@ -61,9 +61,7 @@ export async function getFinancials(category: string, active: boolean, searchTer
       });
 
     }
-
-    
-
+  
     revalidatePath("/"); //makes render faster
     return { success: true, userFinancials, category };
   } catch (error) {
@@ -144,4 +142,47 @@ export async function createGoals(data: GoalFormInput) {
   });
   revalidatePath("/goals");
   return newGoal;
+}
+
+export async function deleteRegister(
+  category: string,
+  id: number
+) {
+  try {
+    const currentUserId = await getUserId();
+    if (!currentUserId) return;
+    
+    let deletedRegister;
+
+    if (category === "incomes") {
+      deletedRegister = await prisma.incomes.update({
+        where: { id },
+        data: {
+          state: false,
+        }
+      });
+      revalidatePath("/incomes");
+    } else if (category === "expenses") {
+      deletedRegister = await prisma.expenses.update({
+        where: { id },
+        data: {
+          state: false,
+        }
+      });
+      revalidatePath("/expenses");
+    } else if (category === "goals") {
+      deletedRegister = await prisma.goals.update({
+        where: { id },
+        data: {
+          state: false,
+        }
+      });
+      revalidatePath("/goals");
+    }
+
+    return deletedRegister;
+  } catch (error) {
+    console.error("Error deleting register:", error);
+    throw error;
+  }
 }
