@@ -10,39 +10,44 @@ import {
 import { useRouter } from "next/navigation";
 import { FinancialDialogForm } from "./FinancialDialogForm";
 
-
-interface CreateDialogProps {
+interface EditDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title?: string;
   category: "incomes" | "expenses" | "goals";
+  item: {
+    id: number;
+    name: string;
+    amount: number;
+    type: string;
+    imageURL?: string;
+  };
 }
 
-export function CreateDialog({
+export function EditDialog({
   open,
   onOpenChange,
-  title = "Create New Item",
+  title = "Edit Item",
   category,
-}: Readonly<CreateDialogProps>) {
+  item,
+}: Readonly<EditDialogProps>) {
   const [isPending, setIsPending] = useState(false);
   const router = useRouter();
-  
-  const handleCreate = async (values: { name: string; amount: number; type: string; imageURL?: string }) => {
-    let url = "/api/incomes";
+
+  const handleEdit = async (values: { name: string; amount: number; type: string; imageURL?: string }) => {
+    let url = `/api/${category}/${item.id}`;
     let body: any = { name: values.name, amount: values.amount, type: values.type };
-    if (category === "expenses") url = "/api/expenses";
     if (category === "goals") {
-      url = "/api/goals";
       body.imageURL = values.imageURL;
     }
 
     setIsPending(true);
     await fetch(url, {
-      method: "POST",
+      method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
-    router.refresh(); // Refresh the page to show the new item
+    router.refresh();
     setIsPending(false);
     onOpenChange(false);
   };
@@ -53,15 +58,16 @@ export function CreateDialog({
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>
-            Fill out the form to create a new item.
+            Edit the fields and save your changes.
           </DialogDescription>
         </DialogHeader>
         <FinancialDialogForm
+          initialValues={item}
           category={category}
           isPending={isPending}
-          onSubmit={handleCreate}
+          onSubmit={handleEdit}
           onCancel={() => onOpenChange(false)}
-          submitLabel="Create"
+          submitLabel="Edit"
         />
       </DialogContent>
     </Dialog>

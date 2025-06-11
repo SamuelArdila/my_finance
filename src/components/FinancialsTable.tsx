@@ -25,7 +25,8 @@ import { useState } from "react";
 import { getFinancials } from "@/actions/financial.actions";
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
-import { CreateDialog } from "./createDialog";
+import { CreateDialog } from "./CreateDialog";
+import { EditDialog } from "./EditDialog";
 
 type Financials = Awaited<ReturnType<typeof getFinancials>>;
 
@@ -44,6 +45,8 @@ export default function FinancialsTable({
   const [selectedType, setSelectedType] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [editingItem, setEditingItem] = useState<any>(null);
 
   
 
@@ -94,12 +97,12 @@ export default function FinancialsTable({
               <TableHead>Amount (USD)</TableHead>
               <TableHead>Registry Date</TableHead>
               <TableHead>Type</TableHead>
+              <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredColumns?.map((column) => {
               const isGoal = financials?.category === "goals";
-
               // Solo crear el slug si es una meta
               const slugifiedName = isGoal ? column.name.toLowerCase().replace(/\s+/g, "-") : "";
               const slug = isGoal ? `${column.id}--${slugifiedName}` : "";
@@ -118,12 +121,45 @@ export default function FinancialsTable({
                   <TableCell>{column.amount}</TableCell>
                   <TableCell>{column.createdAt.toDateString()}</TableCell>
                   <TableCell>{column.type}</TableCell>
+                  <TableCell>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={e => {
+                        e.stopPropagation();
+                        setEditingItem(column);
+                        setShowEditDialog(true);
+                      }}
+                      className="mr-2"
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={e => {
+                        e.stopPropagation();
+                        alert(`Delete ${column.name}`); // Implement delete logic here
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  </TableCell>
                 </TableRow>
               );
             })}
           </TableBody>
 
         </Table>
+        {editingItem && (
+        <EditDialog
+          open={showEditDialog}
+          onOpenChange={setShowEditDialog}
+          title="Edit Item"
+          category={isValidCategory(financials?.category) ? financials.category : "incomes"}
+          item={editingItem}
+        />
+      )}
       </div>
 
       <Pagination className="mt-4">
