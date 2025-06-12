@@ -61,7 +61,7 @@ export async function getFinancials(category: string, active: boolean, searchTer
       });
 
     }
-  
+
     revalidatePath("/"); //makes render faster
     return { success: true, userFinancials, category };
   } catch (error) {
@@ -75,73 +75,117 @@ export async function getGoalsById(id: string) {
   return returnVal;
 }
 
-export type IncomeFormInput = {
-  name: string;
-  amount: number;
-  type: string;
-};
-
-export type ExpenseFormInput = {
-  name: string;
-  amount: number;
-  type: string;
-};
-
-export type GoalFormInput = {
+export type CreateFormInput = {
   name: string;
   amount: number;
   type: string;
   imageURL?: string;
+  category: "incomes" | "expenses" | "goals";
 };
 
-export async function createIncomes(data: IncomeFormInput) {
-  console.log("creating income");
-  console.log(data);
+export type EditFormInput = {
+  id?: number;
+  name: string;
+  amount: number;
+  type: string;
+  imageURL?: string;
+  category: "incomes" | "expenses" | "goals";
+}
+
+export async function createRegister(data: CreateFormInput) {
   try {
     const currentUserId = await getUserId();
     if (!currentUserId) return;
 
-    const newIncome = await prisma.incomes.create({
-      data: {
-        ...data,
-        userId: currentUserId,
-      },
-    });
-    console.log("Created income in DB:", newIncome);
-    revalidatePath("/incomes");
-    return newIncome;
+    let newRegister;
+
+    if (data.category === "incomes") {
+      newRegister = await prisma.incomes.create({
+        data: {
+          name: data.name,
+          amount: data.amount,
+          type: data.type,
+          userId: currentUserId,
+        }
+      });
+      revalidatePath("/incomes");
+    } else if (data.category === "expenses") {
+      newRegister = await prisma.expenses.create({
+        data: {
+          name: data.name,
+          amount: data.amount,
+          type: data.type,
+          userId: currentUserId,
+        }
+      });
+      revalidatePath("/expenses");
+    } else if (data.category === "goals") {
+      newRegister = await prisma.goals.create({
+        data: {
+          name: data.name,
+          amount: data.amount,
+          type: data.type,
+          imageURL: data.imageURL,
+          userId: currentUserId,
+        }
+      });
+      revalidatePath("/goals");
+    }
+
+    return newRegister;
   } catch (error) {
-    console.error("Error Creating Income:", error);
+    console.error("Error Creating Register:", error);
     throw error;
   }
 }
 
-export async function createExpenses(data: ExpenseFormInput) {
-  const currentUserId = await getUserId();
-  if (!currentUserId) return;
+export async function editRegister(data: EditFormInput) {
+  try {
+    const currentUserId = await getUserId();
+    if (!currentUserId) return;
 
-  const newExpense = await prisma.expenses.create({
-    data: {
-      ...data,
-      userId: currentUserId,
-    },
-  });
-  revalidatePath("/expenses");
-  return newExpense;
-}
+    const id = data.id;
 
-export async function createGoals(data: GoalFormInput) {
-  const currentUserId = await getUserId();
-  if (!currentUserId) return;
+    let editedRegister;
 
-  const newGoal = await prisma.goals.create({
-    data: {
-      ...data,
-      userId: currentUserId,
-    },
-  });
-  revalidatePath("/goals");
-  return newGoal;
+    if (data.category === "incomes") {
+      editedRegister = await prisma.incomes.update({
+        where: { id },
+        data: {
+          name: data.name,
+          amount: data.amount,
+          type: data.type
+        }
+      });
+      revalidatePath("/incomes");
+    } else if (data.category === "expenses") {
+      editedRegister = await prisma.expenses.update({
+        where: { id },
+        data: {
+          name: data.name,
+          amount: data.amount,
+          type: data.type
+        }
+      });
+      revalidatePath("/expenses");
+    } else if (data.category === "goals") {
+      editedRegister = await prisma.goals.update({
+        where: { id },
+        data: {
+          name: data.name,
+          amount: data.amount,
+          type: data.type,
+          imageURL: data.imageURL
+        }
+      });
+      revalidatePath("/goals");
+    }
+
+    return editedRegister;
+  } catch (error) {
+    console.error("Error deleting register:", error);
+    throw error;
+  }
 }
 
 export async function deleteRegister(
@@ -151,7 +195,7 @@ export async function deleteRegister(
   try {
     const currentUserId = await getUserId();
     if (!currentUserId) return;
-    
+
     let deletedRegister;
 
     if (category === "incomes") {

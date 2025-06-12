@@ -7,8 +7,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { useRouter } from "next/navigation";
 import { FinancialDialogForm } from "./FinancialDialogForm";
+import { createRegister } from "@/actions/financial.actions";
 
 
 interface CreateDialogProps {
@@ -26,31 +26,23 @@ export function CreateDialog({
   category,
   onSuccess
 }: Readonly<CreateDialogProps>) {
-  const [isPending, setIsPending] = useState(false);
-  const router = useRouter();
+  const [isPending] = useState(false);
 
-  const handleCreate = async (values: { name: string; amount: number; type: string; imageURL?: string }) => {
-    let url = "/api/incomes";
-    let body: any = { name: values.name, amount: values.amount, type: values.type };
+  const handleCreate = async (values: {
+    name: string; amount: number; type: string; imageURL?: string;
+  }) => {
     try {
-      if (category === "expenses") url = "/api/expenses";
-      if (category === "goals") {
-        url = "/api/goals";
-        body.imageURL = values.imageURL;
-      }
-
-      setIsPending(true);
-      await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
+      await createRegister({
+        name: values.name,
+        amount: values.amount,
+        type: values.type,
+        imageURL: values.imageURL,
+        category: category
       });
-      router.refresh(); // Refresh the page to show the new item
-      setIsPending(false);
       onOpenChange(false);
       onSuccess?.("Item created successfully!");
     } catch (error) {
-      console.error("Error deleting register:", error);
+      console.error("Error creating item:", error);
       onSuccess?.("Error creating item.");
     }
   };

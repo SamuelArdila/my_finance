@@ -65,8 +65,6 @@ export default function FinancialsTable({
     }
   };
 
-
-
   return (
     <div className="w-full">
       <div className="w-full">

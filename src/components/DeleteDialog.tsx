@@ -27,7 +27,8 @@ export default function DeleteDialog({
   id,
   onSuccess
 }: Readonly<DeleteDialogProps>) {
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+
+  const handleDelete = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       await deleteRegister(category, id);
@@ -48,7 +49,7 @@ export default function DeleteDialog({
             This action cannot be undone. This will delete the register from the table.
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleDelete}>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction type="submit">Confirm Delete</AlertDialogAction>

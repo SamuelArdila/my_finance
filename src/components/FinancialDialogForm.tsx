@@ -7,6 +7,7 @@ import { DialogFooter, DialogClose } from "@/components/ui/dialog";
 
 interface FinancialDialogFormProps {
   initialValues?: {
+    id?: number;
     name?: string;
     amount?: number;
     type?: string;
@@ -14,7 +15,7 @@ interface FinancialDialogFormProps {
   };
   category: "incomes" | "expenses" | "goals";
   isPending: boolean;
-  onSubmit: (values: { name: string; amount: number; type: string; imageURL?: string }) => void;
+  onSubmit: (values: { id?:number; name: string; amount: number; type: string; imageURL?: string }) => void;
   onCancel: () => void;
   submitLabel: string;
 }
@@ -27,6 +28,7 @@ export function FinancialDialogForm({
   onCancel,
   submitLabel,
 }: Readonly <FinancialDialogFormProps>) {
+  const [id] = useState(initialValues?.id)
   const [type, setType] = useState<string>(initialValues?.type ?? "");
   const [name, setName] = useState(initialValues?.name ?? "");
   const [amount, setAmount] = useState(initialValues?.amount?.toString() ?? "");
@@ -42,7 +44,12 @@ export function FinancialDialogForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!type || !name || !amount) return;
-    onSubmit({ name, amount: Number(amount), type, imageURL });
+
+    if (id) {
+      onSubmit({ id, name, amount: Number(amount), type, imageURL});
+    } else {
+      onSubmit({ name, amount: Number(amount), type, imageURL});
+    }
   };
 
   return (
