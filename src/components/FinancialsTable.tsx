@@ -28,6 +28,7 @@ import { Button } from "./ui/button";
 import { CreateDialog } from "./CreateDialog";
 import { EditDialog } from "./EditDialog";
 import DeleteDialog from "./DeleteDialog";
+import toast from "react-hot-toast"
 
 type Financials = Awaited<ReturnType<typeof getFinancials>>;
 
@@ -51,12 +52,20 @@ export default function FinancialsTable({
   const [editingItem, setEditingItem] = useState<any>(null);
   const [deletingItem, setDeletingItem] = useState<any>(null);
 
-
-
   const filteredColumns = financials?.userFinancials?.filter((column) =>
     column.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
     (selectedType === "" || column.type === selectedType)
   );
+
+  const handleSuccessToast = (message: string) => {
+    if (message.toLowerCase().includes("error")) {
+      toast.error(message);
+    } else {
+      toast.success(message);
+    }
+  };
+
+
 
   return (
     <div className="w-full">
@@ -90,6 +99,7 @@ export default function FinancialsTable({
           onOpenChange={setShowCreateDialog}
           title={createDialogTitlePlaceholder}
           category={isValidCategory(financials?.category) ? financials.category : "incomes"}
+          onSuccess={handleSuccessToast}
         />
 
         <Table>
@@ -162,15 +172,15 @@ export default function FinancialsTable({
             title="Edit Item"
             category={isValidCategory(financials?.category) ? financials.category : "incomes"}
             item={editingItem}
+            onSuccess={handleSuccessToast}
           />)}
         {deletingItem && (
           <DeleteDialog
-            register={{
-              open: showDeleteDialog,
-              onOpenChange: setShowDeleteDialog,
-              category: isValidCategory(financials?.category) ? financials.category : "incomes",
-              id: deletingItem.id,
-            }}
+            open={showDeleteDialog}
+            onOpenChange={setShowDeleteDialog}
+            category={isValidCategory(financials?.category) ? financials.category : "incomes"}
+            id={deletingItem.id}
+            onSuccess={handleSuccessToast}
           />
         )}
       </div>

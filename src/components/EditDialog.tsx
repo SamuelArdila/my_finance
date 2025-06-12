@@ -22,6 +22,7 @@ interface EditDialogProps {
     type: string;
     imageURL?: string;
   };
+  onSuccess?: (message: string) => void;
 }
 
 export function EditDialog({
@@ -30,6 +31,7 @@ export function EditDialog({
   title = "Edit Item",
   category,
   item,
+  onSuccess
 }: Readonly<EditDialogProps>) {
   const [isPending, setIsPending] = useState(false);
   const router = useRouter();
@@ -37,19 +39,25 @@ export function EditDialog({
   const handleEdit = async (values: { name: string; amount: number; type: string; imageURL?: string }) => {
     let url = `/api/${category}/${item.id}`;
     let body: any = { name: values.name, amount: values.amount, type: values.type };
-    if (category === "goals") {
-      body.imageURL = values.imageURL;
-    }
+    try {
+      if (category === "goals") {
+        body.imageURL = values.imageURL;
+      }
 
-    setIsPending(true);
-    await fetch(url, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    router.refresh();
-    setIsPending(false);
-    onOpenChange(false);
+      setIsPending(true);
+      await fetch(url, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      router.refresh();
+      setIsPending(false);
+      onOpenChange(false);
+      onSuccess?.("Item updated successfully!");
+    } catch (error) {
+      console.error("Error updating register:", error);
+      onSuccess?.("Error updating item.");
+    }
   };
 
   return (

@@ -16,6 +16,7 @@ interface CreateDialogProps {
   onOpenChange: (open: boolean) => void;
   title?: string;
   category: "incomes" | "expenses" | "goals";
+  onSuccess?: (message: string) => void;
 }
 
 export function CreateDialog({
@@ -23,28 +24,35 @@ export function CreateDialog({
   onOpenChange,
   title = "Create New Item",
   category,
+  onSuccess
 }: Readonly<CreateDialogProps>) {
   const [isPending, setIsPending] = useState(false);
   const router = useRouter();
-  
+
   const handleCreate = async (values: { name: string; amount: number; type: string; imageURL?: string }) => {
     let url = "/api/incomes";
     let body: any = { name: values.name, amount: values.amount, type: values.type };
-    if (category === "expenses") url = "/api/expenses";
-    if (category === "goals") {
-      url = "/api/goals";
-      body.imageURL = values.imageURL;
-    }
+    try {
+      if (category === "expenses") url = "/api/expenses";
+      if (category === "goals") {
+        url = "/api/goals";
+        body.imageURL = values.imageURL;
+      }
 
-    setIsPending(true);
-    await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    router.refresh(); // Refresh the page to show the new item
-    setIsPending(false);
-    onOpenChange(false);
+      setIsPending(true);
+      await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      router.refresh(); // Refresh the page to show the new item
+      setIsPending(false);
+      onOpenChange(false);
+      onSuccess?.("Item created successfully!");
+    } catch (error) {
+      console.error("Error deleting register:", error);
+      onSuccess?.("Error creating item.");
+    }
   };
 
   return (
