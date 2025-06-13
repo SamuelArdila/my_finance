@@ -7,8 +7,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { useRouter } from "next/navigation";
 import { FinancialDialogForm } from "./FinancialDialogForm";
+import { editRegister } from "@/actions/financial.actions";
 
 interface EditDialogProps {
   open: boolean;
@@ -22,34 +22,32 @@ interface EditDialogProps {
     type: string;
     imageURL?: string;
   };
+  onSuccess?: (message: string) => void;
 }
 
 export function EditDialog({
-  open,
-  onOpenChange,
-  title = "Edit Item",
-  category,
-  item,
+  open, onOpenChange, title = "Edit Item", category, item, onSuccess
 }: Readonly<EditDialogProps>) {
-  const [isPending, setIsPending] = useState(false);
-  const router = useRouter();
+  const [isPending] = useState(false);
 
-  const handleEdit = async (values: { name: string; amount: number; type: string; imageURL?: string }) => {
-    let url = `/api/${category}/${item.id}`;
-    let body: any = { name: values.name, amount: values.amount, type: values.type };
-    if (category === "goals") {
-      body.imageURL = values.imageURL;
+  const handleEdit = async (values: {
+    id?: number, name: string; amount: number; type: string; imageURL?: string;
+  }) => {
+    try {
+      await editRegister({
+        id: values.id,
+        name: values.name,
+        amount: values.amount,
+        type: values.type,
+        imageURL: values.imageURL,
+        category: category
+      });
+      onOpenChange(false);
+      onSuccess?.("Item updated successfully!");
+    } catch (error) {
+      console.error("Error updating item:", error);
+      onSuccess?.("Error updating item.");
     }
-
-    setIsPending(true);
-    await fetch(url, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    router.refresh();
-    setIsPending(false);
-    onOpenChange(false);
   };
 
   return (

@@ -7,8 +7,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { useRouter } from "next/navigation";
 import { FinancialDialogForm } from "./FinancialDialogForm";
+import { createRegister } from "@/actions/financial.actions";
 
 
 interface CreateDialogProps {
@@ -16,6 +16,7 @@ interface CreateDialogProps {
   onOpenChange: (open: boolean) => void;
   title?: string;
   category: "incomes" | "expenses" | "goals";
+  onSuccess?: (message: string) => void;
 }
 
 export function CreateDialog({
@@ -23,28 +24,27 @@ export function CreateDialog({
   onOpenChange,
   title = "Create New Item",
   category,
+  onSuccess
 }: Readonly<CreateDialogProps>) {
-  const [isPending, setIsPending] = useState(false);
-  const router = useRouter();
-  
-  const handleCreate = async (values: { name: string; amount: number; type: string; imageURL?: string }) => {
-    let url = "/api/incomes";
-    let body: any = { name: values.name, amount: values.amount, type: values.type };
-    if (category === "expenses") url = "/api/expenses";
-    if (category === "goals") {
-      url = "/api/goals";
-      body.imageURL = values.imageURL;
-    }
+  const [isPending] = useState(false);
 
-    setIsPending(true);
-    await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    router.refresh(); // Refresh the page to show the new item
-    setIsPending(false);
-    onOpenChange(false);
+  const handleCreate = async (values: {
+    name: string; amount: number; type: string; imageURL?: string;
+  }) => {
+    try {
+      await createRegister({
+        name: values.name,
+        amount: values.amount,
+        type: values.type,
+        imageURL: values.imageURL,
+        category: category
+      });
+      onOpenChange(false);
+      onSuccess?.("Item created successfully!");
+    } catch (error) {
+      console.error("Error creating item:", error);
+      onSuccess?.("Error creating item.");
+    }
   };
 
   return (

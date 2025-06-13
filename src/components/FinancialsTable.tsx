@@ -3,7 +3,6 @@
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
@@ -27,6 +26,8 @@ import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 import { CreateDialog } from "./CreateDialog";
 import { EditDialog } from "./EditDialog";
+import DeleteDialog from "./DeleteDialog";
+import toast from "react-hot-toast"
 
 type Financials = Awaited<ReturnType<typeof getFinancials>>;
 
@@ -46,14 +47,31 @@ export default function FinancialsTable({
   const [searchTerm, setSearchTerm] = useState("");
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
+  const [deletingItem, setDeletingItem] = useState<any>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
-  
 
   const filteredColumns = financials?.userFinancials?.filter((column) =>
     column.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
     (selectedType === "" || column.type === selectedType)
   );
+  const totalPages = Math.ceil((filteredColumns?.length ?? 0) / itemsPerPage);
+
+  const paginatedColumns = filteredColumns?.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handleSuccessToast = (message: string) => {
+    if (message.toLowerCase().includes("error")) {
+      toast.error(message);
+    } else {
+      toast.success(message);
+    }
+  };
 
   return (
     <div className="w-full">
@@ -82,11 +100,12 @@ export default function FinancialsTable({
             />
           </div>
         </div>
-        <CreateDialog 
-          open={showCreateDialog} 
+        <CreateDialog
+          open={showCreateDialog}
           onOpenChange={setShowCreateDialog}
           title={createDialogTitlePlaceholder}
           category={isValidCategory(financials?.category) ? financials.category : "incomes"}
+          onSuccess={handleSuccessToast}
         />
 
         <Table>
@@ -101,9 +120,8 @@ export default function FinancialsTable({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredColumns?.map((column) => {
+            {paginatedColumns?.map((column, index) => {
               const isGoal = financials?.category === "goals";
-              // Solo crear el slug si es una meta
               const slugifiedName = isGoal ? column.name.toLowerCase().replace(/\s+/g, "-") : "";
               const slug = isGoal ? `${column.id}--${slugifiedName}` : "";
               const financialUrl = isGoal ? `/${financials?.category}/${slug}` : "";
@@ -116,7 +134,7 @@ export default function FinancialsTable({
                   }}
                   className={isGoal ? "cursor-pointer" : "cursor-default"}
                 >
-                  <TableCell className="pl-4">{column.id}</TableCell>
+                  <TableCell className="pl-4">{(currentPage - 1) * itemsPerPage + index + 1}</TableCell>
                   <TableCell className="font-medium">{column.name}</TableCell>
                   <TableCell>{column.amount}</TableCell>
                   <TableCell>{column.createdAt.toDateString()}</TableCell>
@@ -125,7 +143,7 @@ export default function FinancialsTable({
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={e => {
+                      onClick={(e) => {
                         e.stopPropagation();
                         setEditingItem(column);
                         setShowEditDialog(true);
@@ -137,9 +155,10 @@ export default function FinancialsTable({
                     <Button
                       size="sm"
                       variant="destructive"
-                      onClick={e => {
+                      onClick={(e) => {
                         e.stopPropagation();
-                        alert(`Delete ${column.name}`); // Implement delete logic here
+                        setDeletingItem(column);
+                        setShowDeleteDialog(true);
                       }}
                     >
                       Delete
@@ -150,40 +169,70 @@ export default function FinancialsTable({
             })}
           </TableBody>
 
+
         </Table>
         {editingItem && (
-        <EditDialog
-          open={showEditDialog}
-          onOpenChange={setShowEditDialog}
-          title="Edit Item"
-          category={isValidCategory(financials?.category) ? financials.category : "incomes"}
-          item={editingItem}
-        />
-      )}
+          <EditDialog
+            open={showEditDialog}
+            onOpenChange={setShowEditDialog}
+            title="Edit Item"
+            category={isValidCategory(financials?.category) ? financials.category : "incomes"}
+            item={editingItem}
+            onSuccess={handleSuccessToast}
+          />)}
+        {deletingItem && (
+          <DeleteDialog
+            open={showDeleteDialog}
+            onOpenChange={setShowDeleteDialog}
+            category={isValidCategory(financials?.category) ? financials.category : "incomes"}
+            id={deletingItem.id}
+            onSuccess={handleSuccessToast}
+          />
+        )}
       </div>
 
       <Pagination className="mt-4">
         <PaginationContent>
           <PaginationItem>
-            <PaginationPrevious href="#" />
+            <PaginationPrevious
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                setCurrentPage((prev) => Math.max(prev - 1, 1));
+              }}
+            />
           </PaginationItem>
+
+          {Array.from({ length: totalPages }).map((_, i) => {
+            const pageNumber = i + 1;
+            return (
+              <PaginationItem key={`page-${pageNumber}`}>
+                <PaginationLink
+                  href="#"
+                  isActive={pageNumber === currentPage}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCurrentPage(pageNumber);
+                  }}
+                >
+                  {pageNumber}
+                </PaginationLink>
+              </PaginationItem>
+            );
+          })}
+
           <PaginationItem>
-            <PaginationLink href="#" isActive>1</PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink href="#">2</PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink href="#">3</PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationEllipsis />
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationNext href="#" />
+            <PaginationNext
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+              }}
+            />
           </PaginationItem>
         </PaginationContent>
       </Pagination>
+
     </div>
   );
 }
