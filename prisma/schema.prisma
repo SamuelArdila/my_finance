@@ -46,3 +46,14 @@ model Goals {
   userId    String
   imageURL  String?
 }
+
+model MonthlySavings {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  year      Int
+  month     Int
+  savings   Float    @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([userId, year, month])
+}

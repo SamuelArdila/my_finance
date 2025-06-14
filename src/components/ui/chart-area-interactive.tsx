@@ -1,0 +1,160 @@
+"use client"
+
+import * as React from "react"
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import { useTheme } from "next-themes";
+
+
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
+type SavingsData = {
+  year: number
+  month: number
+  savings: number
+}
+
+const timeRanges = [
+  { label: "Last 10 Years", value: "10y" },
+  { label: "Last 5 Years", value: "5y" },
+  { label: "Last Year", value: "1y" },
+]
+
+const formatDate = (year: number, month: number) => {
+  const date = new Date(year, month - 1)
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+  })
+}
+
+const chartConfig = {
+  desktop: {
+    label: "Desktop",
+    color: "var(--color-desktop)",
+  },
+} satisfies ChartConfig
+
+export function ChartAreaInteractive({ data }: { data: SavingsData[] }) {
+  const [timeRange, setTimeRange] = React.useState("1y")
+  const { theme } = useTheme(); // Detecta el tema actual
+  const isDark = theme === "dark";
+
+  const strokeColor = isDark ? "#60a5fa" : "#2563eb"; // ejemplo usando Tailwind azul-400 y azul-600
+  const fillGradient = isDark
+    ? ["#60a5fa", "rgba(96, 165, 250, 0.1)"]
+    : ["#2563eb", "rgba(37, 99, 235, 0.1)"];
+
+  const filteredData = React.useMemo(() => {
+    const today = new Date()
+    const cutoffDate = new Date()
+    const yearsToSubtract = parseInt(timeRange)
+    cutoffDate.setFullYear(today.getFullYear() - yearsToSubtract)
+
+    return data
+      .filter(({ year, month }) => {
+        const entryDate = new Date(year, month - 1)
+        return entryDate >= cutoffDate
+      })
+      .sort((a, b) => {
+        const dateA = new Date(a.year, a.month - 1)
+        const dateB = new Date(b.year, b.month - 1)
+        return dateA.getTime() - dateB.getTime()
+      })
+      .map((entry) => ({
+        ...entry,
+        label: formatDate(entry.year, entry.month),
+      }))
+  }, [data, timeRange])
+
+  return (
+    <Card className="@container/card">
+      <CardHeader>
+        <CardTitle>Monthly Savings</CardTitle>
+        <CardDescription>
+          Savings history based on calculated monthly net income
+        </CardDescription>
+        <CardAction>
+          <Select value={timeRange} onValueChange={setTimeRange}>
+            <SelectTrigger className="w-48">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="rounded-xl">
+              {timeRanges.map((range) => (
+                <SelectItem key={range.value} value={range.value}>
+                  {range.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </CardAction>
+      </CardHeader>
+      <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+        <ChartContainer config={chartConfig} className="aspect-auto h-[250px] w-full relative">
+          {filteredData.length > 0 ? (
+            <AreaChart data={filteredData}>
+              <defs>
+                <linearGradient id="fillSavings" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor={fillGradient[0]} stopOpacity={0.8} />
+                  <stop offset="95%" stopColor={fillGradient[1]} stopOpacity={0.1} />
+
+                </linearGradient>
+              </defs>
+              <CartesianGrid vertical={false} />
+              <XAxis
+                dataKey="label"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                minTickGap={24}
+              />
+              <YAxis tickLine={false} axisLine={false} tickMargin={8} />
+              <ChartTooltip
+                cursor={false}
+                content={
+                  <ChartTooltipContent
+                    labelFormatter={(value) => value}
+                    indicator="dot"
+                  />
+                }
+              />
+              <Area
+                dataKey="savings"
+                type="monotone"
+                fill="url(#fillSavings)"
+                stroke={strokeColor}
+                strokeWidth={2}
+              />
+
+            </AreaChart>
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <p className="text-muted-foreground text-sm">
+                No hay datos de ahorro para este rango de tiempo.
+              </p>
+            </div>
+          )}
+        </ChartContainer>
+      </CardContent>
+    </Card>
+  )
+}
