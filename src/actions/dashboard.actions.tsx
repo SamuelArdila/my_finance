@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getUserId } from "./user.action";
-import { startOfMonth, endOfMonth } from "date-fns";
+import { startOfMonth} from "date-fns";
 
 export async function calculateAndGetUserSavings() {
   try {
@@ -12,18 +12,14 @@ export async function calculateAndGetUserSavings() {
     const month = now.getMonth() + 1;
 
     const monthStart = startOfMonth(now);
-    const monthEnd = endOfMonth(now);
 
     // 1. Desactivar registros UNIQUE fuera del mes actual
     await prisma.incomes.updateMany({
       where: {
         userId: currentUserId,
-        type: "unique",
+        type: "Unique",
         state: true,
-        OR: [
-          { createdAt: { lt: monthStart } },
-          { createdAt: { gt: monthEnd } },
-        ],
+        createdAt: { lt: monthStart }
       },
       data: { state: false },
     });
@@ -31,12 +27,9 @@ export async function calculateAndGetUserSavings() {
     await prisma.expenses.updateMany({
       where: {
         userId: currentUserId,
-        type: "unique",
+        type: "Unique",
         state: true,
-        OR: [
-          { createdAt: { lt: monthStart } },
-          { createdAt: { gt: monthEnd } },
-        ],
+        createdAt: { lt: monthStart },
       },
       data: { state: false },
     });
@@ -62,7 +55,7 @@ export async function calculateAndGetUserSavings() {
     const savings = totalIncome - totalExpenses;
 
     // 4. Insertar o actualizar savings del mes
-    const savingsUpsertResult = await prisma.monthlySavings.upsert({
+    await prisma.monthlySavings.upsert({
       where: {
         userId_year_month: {
           userId: currentUserId,
@@ -87,7 +80,14 @@ export async function calculateAndGetUserSavings() {
       orderBy: [{ year: "asc" }, { month: "asc" }],
     });
 
-    return allSavings;
+    // 6. Devolver todos los goals del usuario
+    const goals = await prisma.goals.findMany({
+      where: { userId: currentUserId },
+    });
+
+    const dashboardData = { allSavings, incomes, expenses, goals};
+    console.log("✅ Saving Registered");
+    return dashboardData;
 
   } catch (error) {
     console.error("Error Getting Dashboard:", error);

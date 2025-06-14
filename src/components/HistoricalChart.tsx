@@ -54,7 +54,12 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-export function ChartAreaInteractive({ data }: { data: SavingsData[] }) {
+interface HistoricalChartProps {
+  readonly data: readonly SavingsData[];
+}
+
+export function HistoricalChart({ data }: HistoricalChartProps) {
+
   const [timeRange, setTimeRange] = React.useState("1y")
   const { theme } = useTheme(); // Detecta el tema actual
   const isDark = theme === "dark";
@@ -70,21 +75,40 @@ export function ChartAreaInteractive({ data }: { data: SavingsData[] }) {
     const yearsToSubtract = parseInt(timeRange)
     cutoffDate.setFullYear(today.getFullYear() - yearsToSubtract)
 
-    return data
-      .filter(({ year, month }) => {
-        const entryDate = new Date(year, month - 1)
-        return entryDate >= cutoffDate
+    const filtered = data.filter(({ year, month }) => {
+      const entryDate = new Date(year, month - 1)
+      return entryDate >= cutoffDate
+    })
+
+    if (yearsToSubtract > 1) {
+      // Agrupar por año y sumar savings
+      const grouped = new Map<number, number>()
+      filtered.forEach(({ year, savings }) => {
+        grouped.set(year, (grouped.get(year) ?? 0) + savings)
       })
-      .sort((a, b) => {
-        const dateA = new Date(a.year, a.month - 1)
-        const dateB = new Date(b.year, b.month - 1)
-        return dateA.getTime() - dateB.getTime()
-      })
-      .map((entry) => ({
-        ...entry,
-        label: formatDate(entry.year, entry.month),
-      }))
+
+      return Array.from(grouped.entries())
+        .sort(([a], [b]) => a - b)
+        .map(([year, savings]) => ({
+          label: year.toString(),
+          savings,
+        }))
+    }
+
+    // Rango de 1 año → mostrar por mes
+    const sorted = [...filtered].sort((a, b) => {
+      const dateA = new Date(a.year, a.month - 1)
+      const dateB = new Date(b.year, b.month - 1)
+      return dateA.getTime() - dateB.getTime()
+    })
+
+    return sorted.map((entry) => ({
+      ...entry,
+      label: formatDate(entry.year, entry.month),
+    }))
   }, [data, timeRange])
+
+
 
   return (
     <Card className="@container/card">

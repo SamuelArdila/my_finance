@@ -34,6 +34,8 @@ export default function goalsCard({ financials }: Readonly<GoalsCardProps>) {
                 src={financials.imageURL}
                 alt="Post content"
                 className="w-full h-auto object-cover"
+                width={1000}
+                height={1000}
               />
             </div>
           )}
