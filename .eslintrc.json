@@ -1,3 +1,22 @@
 {
-  "extends": ["next/core-web-vitals", "next/typescript"]
+  "extends": [
+    "next/core-web-vitals",
+    "next",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "ignorePatterns": [
+    "node_modules/",
+    ".next/",
+    "public/",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "src/components/ui/**"
+  ],
+  "rules": {
+    
+  }
 }
