@@ -7,8 +7,6 @@ import { GoalsRadialChart } from '@/components/RadialChart';
 import { GoalsList } from '@/components/GoalsList';
 import { calculateAndGetUserSavings } from '../../actions/dashboard.actions';
 
-
-
 async function page() {
   const user = await stackServerApp.getUser();
 

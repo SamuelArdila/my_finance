@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Combobox } from "./ui/combo-box";
@@ -28,13 +28,13 @@ export function FinancialDialogForm({
   onCancel,
   submitLabel,
 }: Readonly <FinancialDialogFormProps>) {
-  const [id] = useState(initialValues?.id)
-  const [type, setType] = useState<string>(initialValues?.type ?? "");
-  const [name, setName] = useState(initialValues?.name ?? "");
-  const [amount, setAmount] = useState(initialValues?.amount?.toString() ?? "");
-  const [imageURL, setImageURL] = useState(initialValues?.imageURL ?? "");
+  const [id] = React.useState(initialValues?.id)
+  const [type, setType] = React.useState<string>(initialValues?.type ?? "");
+  const [name, setName] = React.useState(initialValues?.name ?? "");
+  const [amount, setAmount] = React.useState(initialValues?.amount?.toString() ?? "");
+  const [imageURL, setImageURL] = React.useState(initialValues?.imageURL ?? "");
 
-  useEffect(() => {
+  React.useEffect(() => {
     setType(initialValues?.type ?? "");
     setName(initialValues?.name ?? "");
     setAmount(initialValues?.amount?.toString() ?? "");

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react"
+import React from 'react';
 import {
   Dialog,
   DialogContent,
@@ -26,7 +26,7 @@ export function CreateDialog({
   category,
   onSuccess
 }: Readonly<CreateDialogProps>) {
-  const [isPending] = useState(false);
+  const [isPending] = React.useState(false);
 
   const handleCreate = async (values: {
     name: string; amount: number; type: string; imageURL?: string;
