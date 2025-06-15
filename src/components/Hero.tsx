@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowUpRight, CirclePlay } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import React from "react";
 
 const Hero = () => {
@@ -22,13 +22,6 @@ const Hero = () => {
           <div className="mt-12 flex items-center gap-4">
             <Button size="lg" className="rounded-full text-base">
               Get Started <ArrowUpRight className="!h-5 !w-5" />
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="rounded-full text-base shadow-none"
-            >
-              <CirclePlay className="!h-5 !w-5" /> Watch Demo
             </Button>
           </div>
         </div>

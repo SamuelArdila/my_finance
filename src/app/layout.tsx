@@ -29,21 +29,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      ><StackProvider app={stackServerApp}><StackTheme><StackProvider app={stackServerApp}><StackTheme>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Navbar />
-          {children}
-        <Toaster position="bottom-right" />
-        </ThemeProvider>
-      </StackTheme></StackProvider></StackTheme></StackProvider></body>
+    <html lang="en" suppressHydrationWarning className="dark"> {/* <-- necesario para dark mode */}
+      <body className="antialiased">
+        <StackProvider app={stackServerApp}>
+          <StackTheme>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <div className={`${geistSans.variable} ${geistMono.variable}`}>
+                <Navbar />
+                {children}
+                <Toaster position="bottom-right" />
+              </div>
+            </ThemeProvider>
+          </StackTheme>
+        </StackProvider>
+      </body>
     </html>
   );
 }
