@@ -4,7 +4,6 @@ import * as React from "react"
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import { useTheme } from "next-themes";
 
-
 import {
   Card,
   CardAction,
@@ -59,12 +58,11 @@ interface HistoricalChartProps {
 }
 
 export function HistoricalChart({ data }: HistoricalChartProps) {
-
   const [timeRange, setTimeRange] = React.useState("1y")
-  const { theme } = useTheme(); // Detecta el tema actual
+  const { theme } = useTheme();
   const isDark = theme === "dark";
 
-  const strokeColor = isDark ? "#60a5fa" : "#2563eb"; // ejemplo usando Tailwind azul-400 y azul-600
+  const strokeColor = isDark ? "#60a5fa" : "#2563eb";
   const fillGradient = isDark
     ? ["#60a5fa", "rgba(96, 165, 250, 0.1)"]
     : ["#2563eb", "rgba(37, 99, 235, 0.1)"];
@@ -81,7 +79,6 @@ export function HistoricalChart({ data }: HistoricalChartProps) {
     })
 
     if (yearsToSubtract > 1) {
-      // Agrupar por año y sumar savings
       const grouped = new Map<number, number>()
       filtered.forEach(({ year, savings }) => {
         grouped.set(year, (grouped.get(year) ?? 0) + savings)
@@ -95,7 +92,6 @@ export function HistoricalChart({ data }: HistoricalChartProps) {
         }))
     }
 
-    // Rango de 1 año → mostrar por mes
     const sorted = [...filtered].sort((a, b) => {
       const dateA = new Date(a.year, a.month - 1)
       const dateB = new Date(b.year, b.month - 1)
@@ -108,77 +104,68 @@ export function HistoricalChart({ data }: HistoricalChartProps) {
     }))
   }, [data, timeRange])
 
-
-
   return (
-    <Card className="@container/card">
-      <CardHeader>
-        <CardTitle>Monthly Savings</CardTitle>
-        <CardDescription>
-          Savings history based on calculated monthly net income
-        </CardDescription>
-        <CardAction>
-          <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger className="w-48">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="rounded-xl">
-              {timeRanges.map((range) => (
-                <SelectItem key={range.value} value={range.value}>
-                  {range.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </CardAction>
-      </CardHeader>
-      <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-        <ChartContainer config={chartConfig} className="aspect-auto h-[250px] w-full relative">
-          {filteredData.length > 0 ? (
-            <AreaChart data={filteredData}>
-              <defs>
-                <linearGradient id="fillSavings" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={fillGradient[0]} stopOpacity={0.8} />
-                  <stop offset="95%" stopColor={fillGradient[1]} stopOpacity={0.1} />
+    <Card className="flex flex-col h-full w-full">
+  <CardHeader className="pb-0">
+    <div className="flex justify-between items-center flex-wrap gap-2 mb-5">
+      <div>
+        <CardTitle>Historical Savings</CardTitle>
+      </div>
+      <CardAction>
+        <Select value={timeRange} onValueChange={setTimeRange}>
+          <SelectTrigger className="w-40">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent className="rounded-xl">
+            {timeRanges.map((range) => (
+              <SelectItem key={range.value} value={range.value}>
+                {range.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </CardAction>
+    </div>
+  </CardHeader>
 
-                </linearGradient>
-              </defs>
-              <CartesianGrid vertical={false} />
-              <XAxis
-                dataKey="label"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                minTickGap={24}
+  <CardContent className="flex-1 flex justify-center items-center min-h-0">
+    <ChartContainer config={chartConfig} className="w-full h-full">
+      {filteredData.length > 0 ? (
+        <AreaChart data={filteredData}>
+          <defs>
+            <linearGradient id="fillSavings" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor={fillGradient[0]} stopOpacity={0.8} />
+              <stop offset="95%" stopColor={fillGradient[1]} stopOpacity={0.1} />
+            </linearGradient>
+          </defs>
+          <CartesianGrid vertical={false} />
+          <XAxis dataKey="label" tickLine={false} axisLine={false} tickMargin={8} minTickGap={24} />
+          <YAxis tickLine={false} axisLine={false} tickMargin={8} />
+          <ChartTooltip
+            cursor={false}
+            content={
+              <ChartTooltipContent
+                labelFormatter={(value) => value}
+                indicator="dot"
               />
-              <YAxis tickLine={false} axisLine={false} tickMargin={8} />
-              <ChartTooltip
-                cursor={false}
-                content={
-                  <ChartTooltipContent
-                    labelFormatter={(value) => value}
-                    indicator="dot"
-                  />
-                }
-              />
-              <Area
-                dataKey="savings"
-                type="monotone"
-                fill="url(#fillSavings)"
-                stroke={strokeColor}
-                strokeWidth={2}
-              />
+            }
+          />
+          <Area
+            dataKey="savings"
+            type="monotone"
+            fill="url(#fillSavings)"
+            stroke={strokeColor}
+            strokeWidth={2}
+          />
+        </AreaChart>
+      ) : (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <p className="text-muted-foreground text-sm">No hay datos de ahorro para este rango de tiempo.</p>
+        </div>
+      )}
+    </ChartContainer>
+  </CardContent>
+</Card>
 
-            </AreaChart>
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <p className="text-muted-foreground text-sm">
-                No hay datos de ahorro para este rango de tiempo.
-              </p>
-            </div>
-          )}
-        </ChartContainer>
-      </CardContent>
-    </Card>
   )
 }

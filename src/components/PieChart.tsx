@@ -66,7 +66,10 @@ export function SavingsPieChart({ incomes, expenses }: Readonly<SavingsPieChartP
     const savings = incomes - expenses;
 
     const isOverSpent = expenses > incomes;
+
     const savingsValue = Math.abs(incomes - expenses);
+
+    const calExpenses = isOverSpent ? incomes : expenses;
 
     const savingsFillColor = isOverSpent
         ? isDark
@@ -79,7 +82,7 @@ export function SavingsPieChart({ incomes, expenses }: Readonly<SavingsPieChartP
     const chartData = [
         {
             name: "Expenses",
-            value: expenses,
+            value: calExpenses,
             fill: isDark ? "#1e40af" : "#3b82f6", // azul
         },
         {
@@ -91,24 +94,24 @@ export function SavingsPieChart({ incomes, expenses }: Readonly<SavingsPieChartP
 
 
     return (
-        <Card className="flex flex-col">
-            <CardHeader className="items-center pb-0">
+        <Card className="flex flex-col h-full w-full">
+            <CardHeader className="pb-0">
                 <CardTitle>Incomes vs Expenses - Savings this Month</CardTitle>
-                <CardDescription>
-                    {`Incomes: $${incomes}  -  Expenses: $${expenses}`}
-                </CardDescription>
+                <CardDescription>{`Incomes: $${incomes}  -  Expenses: $${expenses}`}</CardDescription>
             </CardHeader>
-            <CardContent className="flex-1 pb-0">
+
+            <CardContent className="flex-1 flex justify-center items-center min-h-0 p-0">
                 <ChartContainer
                     config={chartConfig}
-                    className="[&_.recharts-pie-label-text]:fill-foreground mx-auto aspect-square max-h-[250px] pb-0"
+                    className="w-full max-w-[300px] aspect-square"
                 >
-                    <PieChart>
+                    <PieChart width={300} height={300}>
                         <ChartTooltip content={<ChartTooltipContent hideLabel />} />
                         <Pie data={chartData} dataKey="value" nameKey="name" />
                     </PieChart>
                 </ChartContainer>
             </CardContent>
+
             <CardFooter className="flex-col gap-2 text-sm">
                 <div className="flex items-center gap-2 leading-none font-medium">
                     {isOverSpent

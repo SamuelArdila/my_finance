@@ -23,13 +23,6 @@ const Hero = () => {
             <Button size="lg" className="rounded-full text-base">
               Get Started <ArrowUpRight className="!h-5 !w-5" />
             </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="rounded-full text-base shadow-none"
-            >
-              <CirclePlay className="!h-5 !w-5" /> Watch Demo
-            </Button>
           </div>
         </div>
         <div className="w-full aspect-video lg:aspect-auto lg:w-[1000px] lg:h-screen bg-accent rounded-xl lg:rounded-none" />

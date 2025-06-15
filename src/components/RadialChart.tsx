@@ -1,6 +1,6 @@
 "use client"
 
-import { RadialBar, RadialBarChart, LabelList } from "recharts"
+import { RadialBar, RadialBarChart, LabelList, PolarAngleAxis } from "recharts"
 
 import {
   Card,
@@ -10,6 +10,8 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import {
+  ChartTooltip,
+  ChartTooltipContent,
   ChartConfig,
   ChartContainer,
 } from "@/components/ui/chart"
@@ -46,30 +48,37 @@ export function GoalsRadialChart({
     {
       name: "savings",
       value: Math.min(savings, goals),
-      fill: isDark ? "#60a5fa" : "#2563eb", // azul
+      fill: isDark ? "#60a5fa" : "#2563eb",
     },
     {
       name: "projected",
       value: Math.min(projectedSavings, goals),
-      fill: isDark ? "#4ade80" : "#22c55e", // verde
+      fill: isDark ? "#4ade80" : "#22c55e",
     },
   ];
 
   return (
-    <Card className="flex flex-col">
+    <Card className="flex flex-col h-full w-full">
       <CardHeader className="items-center pb-0">
         <CardTitle>Progress to Goals</CardTitle>
       </CardHeader>
-      <CardContent className="flex-1 pb-0">
-        <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[250px]">
+      <CardContent className="flex-1 pb-0 flex justify-center items-center">
+        <ChartContainer config={chartConfig} className="aspect-square w-[80%] max-w-[300px]">
           <RadialBarChart
-            innerRadius={70}
-            outerRadius={110}
+            innerRadius="60%"
+            outerRadius="100%"
             barSize={30}
             data={chartData}
             startAngle={270}
             endAngle={630}
           >
+             <PolarAngleAxis
+              type="number"
+              domain={[0, goals]}
+              angleAxisId={0}
+              tick={false}
+            />
+            <ChartTooltip content={<ChartTooltipContent/>} />
             <RadialBar
               background
               dataKey="value"
