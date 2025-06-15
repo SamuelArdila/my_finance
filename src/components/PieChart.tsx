@@ -71,13 +71,14 @@ export function SavingsPieChart({ incomes, expenses }: Readonly<SavingsPieChartP
 
     const calExpenses = isOverSpent ? incomes : expenses;
 
-    const savingsFillColor = isOverSpent
-        ? isDark
-            ? "#f87171"
-            : "#ef4444" // rojo
-        : isDark
-            ? "#60a5fa"
-            : "#2563eb"; // azul
+    let savingsFillColor;
+
+    if (isOverSpent) {
+        savingsFillColor = isDark ? "#f87171" : "#ef4444"; // rojo
+    } else {
+        savingsFillColor = isDark ? "#60a5fa" : "#2563eb"; // azul
+    }
+
 
     const chartData = [
         {
