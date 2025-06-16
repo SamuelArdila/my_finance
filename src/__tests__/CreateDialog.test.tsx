@@ -2,13 +2,13 @@ import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { CreateDialog } from "../components/CreateDialog";
 import * as actions from "@/actions/financial.actions";
-import { vi } from 'vitest';
+import { vi, Mock } from 'vitest';
 
 // Mock del FinancialDialogForm para controlar onSubmit y onCancel
 vi.mock("./FinancialDialogForm", () => ({
   FinancialDialogForm: ({ onSubmit, onCancel, submitLabel }: any) => (
     <div>
-      <button onClick={() => onSubmit({ name: "Test", amount: 100, type: "type1" })}>
+      <button onClick={() => onSubmit({ name: "Test", amount: 100, type: "Unique" })}>
         {submitLabel}
       </button>
       <button onClick={onCancel}>Cancel</button>
@@ -59,7 +59,7 @@ describe("CreateDialog", () => {
   });
 
   it("calls createRegister and handles success", async () => {
-    (actions.createRegister as vi.Mock).mockResolvedValueOnce(undefined);
+    (actions.createRegister as Mock<typeof actions.createRegister>).mockResolvedValueOnce(undefined);
 
     render(
       <CreateDialog
@@ -80,10 +80,8 @@ describe("CreateDialog", () => {
       target: { value: 100 },
     });
 
-    // Seleccionar tipo (ajustar según opciones reales)
-    fireEvent.click(screen.getByText("Type"));
-    // Esperar y seleccionar opción "Unique" (buscando por role 'option' y texto)
-    const uniqueOption = await screen.findByRole("option", { name: /unique/i });
+    fireEvent.click(screen.getByRole("combobox"));
+    const uniqueOption = await screen.findByText(/unique/i);
     fireEvent.click(uniqueOption);
 
     // Llenar ImageURL (porque category === "goals")
@@ -107,5 +105,4 @@ describe("CreateDialog", () => {
     expect(onOpenChangeMock).toHaveBeenCalledWith(false);
     expect(onSuccessMock).toHaveBeenCalledWith("Item created successfully!");
   });
-
 });

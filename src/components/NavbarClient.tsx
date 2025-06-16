@@ -1,3 +1,5 @@
+"use client";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { HomeIcon, LogIn, LogOut, LayoutDashboard, BanknoteArrowUp, BanknoteArrowDown, Goal } from "lucide-react";
@@ -5,9 +7,17 @@ import ModeToggle from "./ModeToggle";
 import { stackServerApp } from "@/stack";
 import { UserButton } from "@stackframe/stack";
 
-async function Navbar() {
-  const user = await stackServerApp.getUser();
+function Navbar() {
+  const [user, setUser] = useState<any>(null);
   const app = stackServerApp.urls;
+
+  useEffect(() => {
+    let mounted = true;
+    stackServerApp.getUser().then(u => {
+      if (mounted) setUser(u);
+    });
+    return () => { mounted = false; };
+  }, []);
 
   return (
     <nav className="sticky top-0 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50">
@@ -24,7 +34,6 @@ async function Navbar() {
           </div>
 
           {/*Navbar components*/}
-
           <div className="hidden md:flex items-center space-x-4">
             <Button variant="ghost" className="flex items-center gap-2" asChild>
               <Link href="/">
@@ -73,13 +82,10 @@ async function Navbar() {
                 >
                   <Link href={app.signOut}>
                     <LogOut className="w-4 h-4" />
-
                     <span className="hidden lg:inline">Sign Out</span>
                   </Link>
                 </Button>
-
                 <UserButton />
-
               </>
             ) : (
               <>

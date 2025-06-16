@@ -81,6 +81,7 @@ export default function FinancialsTable({
           <Button
             className="btn btn-primary"
             variant={"outline"}
+            aria-label="Add"
             onClick={() => setShowCreateDialog(true)}
           >+ Add</Button>
 
@@ -143,6 +144,7 @@ export default function FinancialsTable({
                     <Button
                       size="sm"
                       variant="outline"
+                      aria-label="Edit"
                       onClick={(e) => {
                         e.stopPropagation();
                         setEditingItem(column);
@@ -155,6 +157,7 @@ export default function FinancialsTable({
                     <Button
                       size="sm"
                       variant="destructive"
+                      aria-label="Delete"
                       onClick={(e) => {
                         e.stopPropagation();
                         setDeletingItem(column);
