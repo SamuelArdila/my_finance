@@ -76,4 +76,21 @@ describe("DeleteDialog", () => {
       expect(onSuccessMock).toHaveBeenCalledWith("Error deleting item.");
     });
   });
+
+  it("calls onOpenChange when cancel is clicked", () => {
+    render(
+      <DeleteDialog
+        open={true}
+        onOpenChange={onOpenChangeMock}
+        category="goals"
+        id={10}
+        onSuccess={onSuccessMock}
+      />
+    );
+
+    fireEvent.click(screen.getByText(/cancel/i));
+
+    expect(onOpenChangeMock).toHaveBeenCalledWith(false);
+  });
+
 });

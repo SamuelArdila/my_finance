@@ -105,4 +105,46 @@ describe("CreateDialog", () => {
     expect(onOpenChangeMock).toHaveBeenCalledWith(false);
     expect(onSuccessMock).toHaveBeenCalledWith("Item created successfully!");
   });
+
+  it("handles error when createRegister fails", async () => {
+    (actions.createRegister as Mock<typeof actions.createRegister>).mockRejectedValueOnce(new Error("API Error"));
+
+    render(
+      <CreateDialog
+        open={true}
+        onOpenChange={onOpenChangeMock}
+        category="expenses"
+        onSuccess={onSuccessMock}
+      />
+    );
+
+    fireEvent.change(screen.getByLabelText(/name/i), { target: { value: "Test" } });
+    fireEvent.change(screen.getByLabelText(/amount/i), { target: { value: 100 } });
+    fireEvent.click(screen.getByRole("combobox"));
+    const uniqueOption = await screen.findByText(/unique/i);
+    fireEvent.click(uniqueOption);
+    fireEvent.click(screen.getByRole("button", { name: /create/i }));
+
+    await waitFor(() => {
+      expect(actions.createRegister).toHaveBeenCalled();
+    });
+
+    expect(onSuccessMock).toHaveBeenCalledWith("Error creating item.");
+  });
+
+  it("closes dialog when cancel is clicked", () => {
+    render(
+      <CreateDialog
+        open={true}
+        onOpenChange={onOpenChangeMock}
+        category="incomes"
+        onSuccess={onSuccessMock}
+      />
+    );
+
+    fireEvent.click(screen.getByText("Cancel"));
+
+    expect(onOpenChangeMock).toHaveBeenCalledWith(false);
+  });
+
 });

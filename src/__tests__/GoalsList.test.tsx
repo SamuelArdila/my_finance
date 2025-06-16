@@ -1,6 +1,16 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import { GoalsList } from "../components/GoalsList";
+import { vi } from 'vitest';
+
+vi.mock("next/image", () => ({
+  __esModule: true,
+  default: (props: any) => {
+    // Renderizamos un <img> normal para el test
+    const { src, alt, ...rest } = props;
+    return <img src={src} alt={alt} {...rest} />;
+  },
+}));
 
 describe("GoalsList", () => {
   const goals = [

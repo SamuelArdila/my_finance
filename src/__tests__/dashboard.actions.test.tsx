@@ -60,7 +60,7 @@ describe("calculateAndGetUserSavings", () => {
 
   it("throws and logs error if something fails", async () => {
     (getUserId as any).mockRejectedValue(new Error("fail"));
-    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const spy = vi.spyOn(console, "error").mockImplementation(() => { });
     await expect(calculateAndGetUserSavings()).rejects.toThrow("fail");
     expect(spy).toHaveBeenCalledWith(
       "Error Getting Dashboard:",
@@ -68,4 +68,26 @@ describe("calculateAndGetUserSavings", () => {
     );
     spy.mockRestore();
   });
+
+  it("calculates savings with empty incomes and expenses", async () => {
+    (getUserId as any).mockResolvedValue("user1");
+
+    findManyMock
+      .mockResolvedValueOnce([]) // incomes.updateMany
+      .mockResolvedValueOnce([]) // expenses.updateMany
+      .mockResolvedValueOnce([]) // incomes.findMany
+      .mockResolvedValueOnce([]) // expenses.findMany
+      .mockResolvedValueOnce([]) // monthlySavings.findMany (allSavings)
+      .mockResolvedValueOnce([]); // goals.findMany
+
+    upsertMock.mockResolvedValue({});
+
+    const result = await calculateAndGetUserSavings();
+
+    expect(result).toHaveProperty("allSavings");
+    expect(result).toHaveProperty("incomes");
+    expect(result).toHaveProperty("expenses");
+    expect(result).toHaveProperty("goals");
+  });
+
 });
