@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowUpRight } from "lucide-react";
 import React, { useState }from "react";
 import { SignUp } from '@stackframe/stack';
+import Image from "next/image";
 
 const Hero = () => {
   const [showSignup, setShowSignup] = useState(false);
@@ -33,11 +34,14 @@ const Hero = () => {
           className="mt-12 w-3/4 max-w-[1000px] rounded-xl shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           aria-label="Sign up"
         >
-          <img
+          <Image
             src="/hero-image.jpeg"
             alt="Hero"
             className="w-full h-auto rounded-xl"
             draggable={false}
+            width={1000}
+            height={600}
+            priority
           />
         </button>
 
