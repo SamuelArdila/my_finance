@@ -28,19 +28,33 @@ async function page() {
     <>
       {user ? (
 
-        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-8 px-4 py-4 lg:mr-80 lg:ml-80" >
-          <div className="w-full h-[42vh] shadow rounded-xl">
-            <SavingsPieChart incomes={totalIncome} expenses={totalExpenses} /> </div>
-          < div className="w-full h-[42vh] border-gray-270 border-2 shadow rounded-xl col-span-2" >
-            <GoalsList goals={goals} /> </div>
-          <div className="w-full h-[42vh] shadow rounded-xl col-span-2" >
-            <HistoricalChart data={dashboardData?.allSavings ?? []} /> </div >
-          <div className="w-full h-[42vh] shadow rounded-xl" >
-            <GoalsRadialChart incomes={totalIncome} expenses={totalExpenses} savings={totalSavings} goals={totalGoals} /> </div >
+        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-8 px-4 py-4 lg:mr-80 lg:ml-80">
+          <div className="w-full h-auto lg:h-[42vh] shadow rounded-xl">
+            <SavingsPieChart incomes={totalIncome} expenses={totalExpenses} />
+          </div>
+
+          <div className="w-full min-h-[300px] lg:h-[42vh] border-gray-270 border-2 shadow rounded-xl col-span-1 lg:col-span-2">
+            <GoalsList goals={goals} />
+          </div>
+
+
+          <div className="w-full h-auto lg:h-[42vh] shadow rounded-xl col-span-1 lg:col-span-2">
+            <HistoricalChart data={dashboardData?.allSavings ?? []} />
+          </div>
+
+          <div className="w-full h-auto lg:h-[42vh] shadow rounded-xl">
+            <GoalsRadialChart
+              incomes={totalIncome}
+              expenses={totalExpenses}
+              savings={totalSavings}
+              goals={totalGoals}
+            />
+          </div>
         </div>
 
+
       ) : (
-        
+
         <div className='flex justify-center mt-20 items-center'>
           <SignUp />
         </div>
