@@ -84,7 +84,10 @@ export async function calculateAndGetUserSavings() {
 
     // 6. Devolver todos los goals del usuario
     const goals = await prisma.goals.findMany({
-      where: { userId: currentUserId },
+      where: { 
+        userId: currentUserId,
+        state: true,
+      },
     });
 
     const dashboardData = { allSavings, incomes, expenses, goals};
