@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import Image from "next/image";
 
 interface Goal {
   readonly name: string;
@@ -27,10 +28,12 @@ export function GoalsList({ goals }: GoalsListProps) {
           <CardContent className="flex flex-row items-center p-4 gap-4 h-full">
             {goal.imageURL && (
               <div className="flex-shrink-0 h-[80%] max-w-[45%]">
-                <img
+                <Image
                   src={goal.imageURL}
                   alt={goal.name}
                   className="h-full w-full object-cover rounded-lg"
+                  width={200}
+                  height={200}
                 />
               </div>
             )}

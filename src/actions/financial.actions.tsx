@@ -8,7 +8,7 @@ export async function getFinancials(category: string, active: boolean, searchTer
   try {
     const currentUserId = await getUserId();
 
-    const whereClause: any = {
+    const whereClause:  Record<string, unknown> = {
       userId: currentUserId,
     };
 
@@ -69,8 +69,7 @@ export async function getFinancials(category: string, active: boolean, searchTer
 }
 
 export async function getGoalsById(id: string) {
-  let returnVal;
-  returnVal = await prisma.goals.findUnique({ where: { id: Number(id) } });
+  const returnVal = await prisma.goals.findUnique({ where: { id: Number(id) } });
   return returnVal;
 }
 

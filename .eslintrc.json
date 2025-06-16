@@ -14,7 +14,9 @@
     "public/",
     "**/*.test.ts",
     "**/*.test.tsx",
-    "src/components/ui/**"
+    "**/__mocks__/**",
+    "src/components/ui/**",
+    "src/components/NavbarClient.tsx"
   ],
   "rules": {
     

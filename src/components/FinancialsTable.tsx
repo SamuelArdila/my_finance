@@ -30,6 +30,7 @@ import DeleteDialog from "./DeleteDialog";
 import toast from "react-hot-toast"
 
 type Financials = Awaited<ReturnType<typeof getFinancials>>;
+type FinancialItem = NonNullable<NonNullable<Financials>['userFinancials']>[number];
 
 interface FinancialsTableProps {
   financials: Financials;
@@ -48,8 +49,8 @@ export default function FinancialsTable({
   const [showCreateDialog, setShowCreateDialog] = React.useState(false);
   const [showEditDialog, setShowEditDialog] = React.useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
-  const [editingItem, setEditingItem] = React.useState<any>(null);
-  const [deletingItem, setDeletingItem] = React.useState<any>(null);
+  const [editingItem, setEditingItem] = React.useState<FinancialItem | null>(null);
+  const [deletingItem, setDeletingItem] = React.useState<FinancialItem | null>(null);
   const [currentPage, setCurrentPage] = React.useState(1);
   const itemsPerPage = 10;
 
@@ -240,6 +241,6 @@ export default function FinancialsTable({
   );
 }
 
-function isValidCategory(cat: any): cat is "incomes" | "expenses" | "goals" {
+function isValidCategory(cat: unknown): cat is "incomes" | "expenses" | "goals" {
   return cat === "incomes" || cat === "expenses" || cat === "goals";
 }

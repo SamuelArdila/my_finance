@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/card";
 
 import { getGoalsById } from "@/actions/financial.actions";
+import Image from "next/image";
 
 
 type Financials = Awaited<ReturnType<typeof getGoalsById>>;
@@ -30,13 +31,13 @@ export default function goalsCard({ financials }: Readonly<GoalsCardProps>) {
           <CardHeader>
           {financials.imageURL && (
             <div className="rounded-lg overflow-hidden">
-              <img
-                src={financials.imageURL}
-                alt="Post content"
-                className="w-full h-auto object-cover"
-                width={1000}
-                height={1000}
-              />
+              <Image
+                  src={financials.imageURL}
+                  alt="Post content"
+                  className="w-full h-auto object-cover"
+                  width={1000}
+                  height={1000}
+                />
             </div>
           )}
 
