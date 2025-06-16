@@ -1,6 +1,7 @@
 "use client"
 
 import { Pie, PieChart } from "recharts"
+import React from "react"
 
 import {
     Card,

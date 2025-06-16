@@ -1,7 +1,7 @@
 "use client"
 
 import { RadialBar, RadialBarChart, LabelList, PolarAngleAxis } from "recharts"
-
+import React from "react"
 import {
   Card,
   CardContent,
@@ -97,8 +97,8 @@ export function GoalsRadialChart({
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 leading-none font-medium">
           {projectedSavings >= goals
-            ? "🎉 ¡Meta alcanzada! Has llegado al 100% o más."
-            : `Faltan $${(goals - projectedSavings).toFixed(2)} para alcanzar la meta`}
+            ? "🎉 Goal achieved! You have made it to 100% or more."
+            : `$${(goals - projectedSavings).toFixed(2)} more to achieve your goal.`}
         </div>
       </CardFooter>
     </Card>

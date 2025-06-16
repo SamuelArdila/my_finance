@@ -1,3 +1,5 @@
+"use server";
+
 import { prisma } from "@/lib/prisma";
 import { getUserId } from "./user.action";
 import { startOfMonth} from "date-fns";
@@ -86,7 +88,6 @@ export async function calculateAndGetUserSavings() {
     });
 
     const dashboardData = { allSavings, incomes, expenses, goals};
-    console.log("✅ Saving Registered");
     return dashboardData;
 
   } catch (error) {

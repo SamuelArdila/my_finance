@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react"
+import React from "react"
 import {
   Dialog,
   DialogContent,
@@ -28,7 +28,7 @@ interface EditDialogProps {
 export function EditDialog({
   open, onOpenChange, title = "Edit Item", category, item, onSuccess
 }: Readonly<EditDialogProps>) {
-  const [isPending] = useState(false);
+  const [isPending] = React.useState(false);
 
   const handleEdit = async (values: {
     id?: number, name: string; amount: number; type: string; imageURL?: string;

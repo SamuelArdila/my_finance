@@ -7,7 +7,6 @@ import { revalidatePath } from "next/cache";
 export async function getFinancials(category: string, active: boolean, searchTerm?: string) {
   try {
     const currentUserId = await getUserId();
-    console.log("Current userId:", currentUserId);
 
     const whereClause: any = {
       userId: currentUserId,

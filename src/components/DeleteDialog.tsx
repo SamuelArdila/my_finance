@@ -1,5 +1,5 @@
 "use client";
-
+import React from "react";
 import { deleteRegister } from "@/actions/financial.actions";
 import {
   AlertDialog,

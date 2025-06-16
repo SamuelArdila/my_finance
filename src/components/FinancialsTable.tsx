@@ -20,7 +20,7 @@ import {
 import { Search } from "lucide-react";
 import { Combobox } from "./ui/combo-box";
 import { Input } from "./ui/input";
-import { useState } from "react";
+import React from "react";
 import { getFinancials } from "@/actions/financial.actions";
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
@@ -43,14 +43,14 @@ export default function FinancialsTable({
   createDialogTitlePlaceholder = "Add Item",
 }: Readonly<FinancialsTableProps>) {
   const router = useRouter();
-  const [selectedType, setSelectedType] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [showEditDialog, setShowEditDialog] = useState(false);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [editingItem, setEditingItem] = useState<any>(null);
-  const [deletingItem, setDeletingItem] = useState<any>(null);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedType, setSelectedType] = React.useState("");
+  const [searchTerm, setSearchTerm] = React.useState("");
+  const [showCreateDialog, setShowCreateDialog] = React.useState(false);
+  const [showEditDialog, setShowEditDialog] = React.useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
+  const [editingItem, setEditingItem] = React.useState<any>(null);
+  const [deletingItem, setDeletingItem] = React.useState<any>(null);
+  const [currentPage, setCurrentPage] = React.useState(1);
   const itemsPerPage = 10;
 
 
@@ -81,6 +81,7 @@ export default function FinancialsTable({
           <Button
             className="btn btn-primary"
             variant={"outline"}
+            aria-label="Add"
             onClick={() => setShowCreateDialog(true)}
           >+ Add</Button>
 
@@ -143,6 +144,7 @@ export default function FinancialsTable({
                     <Button
                       size="sm"
                       variant="outline"
+                      aria-label="Edit"
                       onClick={(e) => {
                         e.stopPropagation();
                         setEditingItem(column);
@@ -155,6 +157,7 @@ export default function FinancialsTable({
                     <Button
                       size="sm"
                       variant="destructive"
+                      aria-label="Delete"
                       onClick={(e) => {
                         e.stopPropagation();
                         setDeletingItem(column);
